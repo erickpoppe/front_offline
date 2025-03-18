@@ -11,7 +11,7 @@ export default function Home() {
     const [formData, setFormData] = useState(null);
     const [counter, setCounter] = useState(59);
     const [eventId, setEventId] = useState(null); // Tracks the current event ID from response
-    const [batchId, setBatchId] = useState(7); // Tracks batch ID, starts at 6
+    const [batchId, setBatchId] = useState(8); // Tracks batch ID, starts at 6
     const [isSwitchActive, setIsSwitchActive] = useState(false); // Tracks activation switch
     const [activeForm, setActiveForm] = useState(null); // Tracks which form to display
     const [resetActivation, setResetActivation] = useState(false); // Signal to reset activation switch
