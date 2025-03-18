@@ -10,9 +10,9 @@ import 'react-toastify/dist/ReactToastify.css';
 
 function Home() {
     const [formData, setFormData] = useState(null);
-    const [counter, setCounter] = useState(47); // Counter for display, starts at 47
+    const [counter, setCounter] = useState(61); // Counter for display, starts at 47
     const [eventId, setEventId] = useState(null); // Tracks the current event ID from response
-    const [batchId, setBatchId] = useState(6); // Tracks batch ID, starts at 6
+    const [batchId, setBatchId] = useState(8); // Tracks batch ID, starts at 6
     const [isSwitchActive, setIsSwitchActive] = useState(false); // Tracks activation switch
     const [activeForm, setActiveForm] = useState(null); // Tracks which form to display
     const [resetActivation, setResetActivation] = useState(false); // Signal to reset activation switch
@@ -40,7 +40,7 @@ function Home() {
             pauseOnHover: true,
             draggable: true,
         });
-        setCounter(47);
+        setCounter(61);
         setIsSwitchActive(false);
         setActiveForm(null);
         setResetActivation(true);
@@ -63,7 +63,7 @@ function Home() {
 
         try {
             const response = await fetch(
-                `https://prod-core-invoice-service-4z5dz4d2yq-uc.a.run.app/invoices/emit/offline?customer_id=1&branch_id=2&pos_id=4&event_id=${eventId}&doc_sector=1`,
+                `https://prod-core-invoice-service-4z5dz4d2yq-uc.a.run.app/invoices/emit/offline?customer_id=1&branch_id=1&pos_id=1&event_id=${eventId}&doc_sector=1`,
                 {
                     method: 'POST',
                     headers: {
