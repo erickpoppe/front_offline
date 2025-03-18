@@ -1,17 +1,18 @@
 // pages/index.js
-import { useState } from 'react';
+import { useState, useEffect } from 'react';
 import Switch from '../components/Switch';
 import DeactivationSwitch from '../components/DeactivationSwitch';
 import InvoiceForm from '../components/InvoiceForm';
 import MedicalServicesForm from '../components/MedicalServicesForm';
+import Login from '../components/Login';
 import { ToastContainer, toast } from 'react-toastify';
 import 'react-toastify/dist/ReactToastify.css';
 
-export default function Home() {
+function Home() {
     const [formData, setFormData] = useState(null);
-    const [counter, setCounter] = useState(59);
+    const [counter, setCounter] = useState(47); // Counter for display, starts at 47
     const [eventId, setEventId] = useState(null); // Tracks the current event ID from response
-    const [batchId, setBatchId] = useState(8); // Tracks batch ID, starts at 6
+    const [batchId, setBatchId] = useState(6); // Tracks batch ID, starts at 6
     const [isSwitchActive, setIsSwitchActive] = useState(false); // Tracks activation switch
     const [activeForm, setActiveForm] = useState(null); // Tracks which form to display
     const [resetActivation, setResetActivation] = useState(false); // Signal to reset activation switch
@@ -22,12 +23,12 @@ export default function Home() {
             console.error('No event_id received from activation');
             return;
         }
-        setCounter(prev => prev + 1); // Increment counter for display
-        setEventId(newEventId); // Set eventId from activation response
-        setIsSwitchActive(true); // Activate switch
-        setActiveForm('ventaFarmacia'); // Default to Venta Farmacia form
-        setResetActivation(false); // Ensure activation reset is false
-        setResetDeactivation(true); // Reset deactivation switch on new activation
+        setCounter(prev => prev + 1);
+        setEventId(newEventId);
+        setIsSwitchActive(true);
+        setActiveForm('ventaFarmacia');
+        setResetActivation(false);
+        setResetDeactivation(true);
     };
 
     const handleSwitchDeactivation = (codigoRecepcion) => {
@@ -39,11 +40,11 @@ export default function Home() {
             pauseOnHover: true,
             draggable: true,
         });
-        setCounter(59); // Reset counter to 47 for display
-        setIsSwitchActive(false); // Deactivate switch
-        setActiveForm(null); // Hide forms
-        setResetActivation(true); // Reset activation switch
-        setResetDeactivation(false); // Ensure deactivation reset is false after use
+        setCounter(47);
+        setIsSwitchActive(false);
+        setActiveForm(null);
+        setResetActivation(true);
+        setResetDeactivation(false);
     };
 
     const handleEmitOfflineDocSector1 = async () => {
@@ -158,13 +159,13 @@ export default function Home() {
         const url = `https://prod-core-invoice-service-4z5dz4d2yq-uc.a.run.app/invoices/emit/validate?batch_id=${batchId}&customer_id=1&branch_id=1&pos_id=1`;
         try {
             const response = await fetch(url, {
-                method: 'GET', // Changed from POST to GET
+                method: 'GET',
                 headers: {
                     'accept': 'application/json',
                 }
             });
 
-            const responseText = await response.text(); // Get raw response for debugging
+            const responseText = await response.text();
             console.log(`Validate batch request: GET ${url}`);
             console.log(`Response status: ${response.status}`);
             console.log(`Response text: ${responseText}`);
@@ -201,7 +202,7 @@ export default function Home() {
                         draggable: true,
                     });
                 }
-                setBatchId(prev => prev + 1); // Increment batchId after success
+                setBatchId(prev => prev + 1);
             } else {
                 throw new Error('Transaction failed during validation');
             }
@@ -396,5 +397,55 @@ export default function Home() {
         }
       `}</style>
         </div>
+    );
+}
+
+export default function App() {
+    const [isAuthenticated, setIsAuthenticated] = useState(false);
+
+    useEffect(() => {
+        // Check if already authenticated (e.g., from localStorage)
+        const authStatus = localStorage.getItem('isAuthenticated');
+        if (authStatus === 'true') {
+            setIsAuthenticated(true);
+        }
+    }, []);
+
+    const handleLogin = () => {
+        setIsAuthenticated(true);
+        localStorage.setItem('isAuthenticated', 'true'); // Persist login state
+    };
+
+    const handleLogout = () => {
+        setIsAuthenticated(false);
+        localStorage.removeItem('isAuthenticated'); // Clear login state
+    };
+
+    return (
+        <>
+            {isAuthenticated ? (
+                <>
+                    <Home />
+                    <button
+                        onClick={handleLogout}
+                        style={{
+                            position: 'fixed',
+                            top: '10px',
+                            right: '10px',
+                            padding: '5px 10px',
+                            backgroundColor: '#ff4444',
+                            color: 'white',
+                            border: 'none',
+                            borderRadius: '4px',
+                            cursor: 'pointer',
+                        }}
+                    >
+                        Logout
+                    </button>
+                </>
+            ) : (
+                <Login onLogin={handleLogin} />
+            )}
+        </>
     );
 }

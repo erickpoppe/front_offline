@@ -1,7 +1,12 @@
 <?xml version="1.0" encoding="UTF-8"?>
 <project version="4">
+  <component name="AutoImportSettings">
+    <option name="autoReloadType" value="SELECTIVE" />
+  </component>
   <component name="ChangeListManager">
-    <list default="true" id="3a07ce2b-2b87-4fe2-9d60-7534b28ff9eb" name="Changes" comment="">
+    <list default="true" id="3a07ce2b-2b87-4fe2-9d60-7534b28ff9eb" name="Changes" comment="Fix batch_id number">
+      <change afterPath="$PROJECT_DIR$/src/components/Login.js" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/.idea/workspace.xml" beforeDir="false" afterPath="$PROJECT_DIR$/.idea/workspace.xml" afterDir="false" />
       <change beforePath="$PROJECT_DIR$/src/pages/index.js" beforeDir="false" afterPath="$PROJECT_DIR$/src/pages/index.js" afterDir="false" />
     </list>
     <option name="SHOW_DIALOG" value="false" />
@@ -26,7 +31,9 @@
     "git-widget-placeholder": "main",
     "last_opened_file_path": "/Users/erickpoppe/WebstormProjects/front_offline",
     "node.js.detected.package.eslint": "true",
+    "node.js.detected.package.tslint": "true",
     "node.js.selected.package.eslint": "(autodetect)",
+    "node.js.selected.package.tslint": "(autodetect)",
     "nodejs_package_manager_path": "npm",
     "vue.rearranger.settings.migration": "true"
   }
@@ -46,11 +53,26 @@
       <option name="number" value="Default" />
       <option name="presentableId" value="Default" />
       <updated>1742337768938</updated>
-      <workItem from="1742337770036" duration="30000" />
+      <workItem from="1742337770036" duration="776000" />
     </task>
     <servers />
   </component>
   <component name="TypeScriptGeneratedFilesManager">
     <option name="version" value="3" />
+  </component>
+  <component name="Vcs.Log.Tabs.Properties">
+    <option name="TAB_STATES">
+      <map>
+        <entry key="MAIN">
+          <value>
+            <State />
+          </value>
+        </entry>
+      </map>
+    </option>
+  </component>
+  <component name="VcsManagerConfiguration">
+    <MESSAGE value="Fix batch_id number" />
+    <option name="LAST_COMMIT_MESSAGE" value="Fix batch_id number" />
   </component>
 </project>
