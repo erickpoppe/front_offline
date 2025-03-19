@@ -10,7 +10,7 @@ import 'react-toastify/dist/ReactToastify.css';
 
 function Home() {
     const [formData, setFormData] = useState(null);
-    const [counter, setCounter] = useState(61); // Counter for display, starts at 47
+    const [counter, setCounter] = useState(67); // Counter for display, starts at 47
     const [eventId, setEventId] = useState(null); // Tracks the current event ID from response
     const [batchId, setBatchId] = useState(8); // Tracks batch ID, starts at 6
     const [isSwitchActive, setIsSwitchActive] = useState(false); // Tracks activation switch
@@ -40,7 +40,7 @@ function Home() {
             pauseOnHover: true,
             draggable: true,
         });
-        setCounter(61);
+        setCounter(67);
         setIsSwitchActive(false);
         setActiveForm(null);
         setResetActivation(true);
