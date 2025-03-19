@@ -13,6 +13,7 @@ export default function InvoiceForm({ setFormData }) {
         clientEmail: '',
         documentNumber: '',
     });
+    const [lastInvoiceNumber, setLastInvoiceNumber] = useState(null); // Store the last invoice number
 
     const handleChange = (e) => {
         const { name, value } = e.target;
@@ -83,42 +84,15 @@ export default function InvoiceForm({ setFormData }) {
 
             const invoiceNumber = responseData.emission_response?.invoice_number;
             if (invoiceNumber) {
-                toast.success(`Factura enviada con éxito. Invoice Number: ${invoiceNumber}. Generando PDF en 7 segundos...`, {
+                setLastInvoiceNumber(invoiceNumber); // Store the invoice number
+                toast.success(`Factura enviada con éxito. Invoice Number: ${invoiceNumber}`, {
                     position: "top-right",
-                    autoClose: 7000, // Match the delay for user feedback
+                    autoClose: 5000,
                     hideProgressBar: false,
                     closeOnClick: true,
                     pauseOnHover: true,
                     draggable: true,
                 });
-
-                // Wait 7 seconds before fetching the PDF
-                setTimeout(async () => {
-                    try {
-                        const pdfUrl = `https://prod-core-invoice-service-4z5dz4d2yq-uc.a.run.app/invoices/pdf?invoice_number=${invoiceNumber}&customer_id=1&is_roll=1`;
-                        const token = 'wqaevQPKrMVPvxlxuhpiURH0XoD2pUo6FTt2LB8EciI'; // Replace with secure method in production
-
-                        const pdfResponse = await fetch(pdfUrl, {
-                            method: 'GET',
-                            headers: {
-                                'accept': 'application/json',
-                                'Authorization': `Bearer ${token}`,
-                            },
-                        });
-
-                        if (!pdfResponse.ok) {
-                            throw new Error('Failed to fetch PDF after delay');
-                        }
-
-                        const pdfBlob = await pdfResponse.blob();
-                        const pdfObjectUrl = URL.createObjectURL(pdfBlob);
-                        window.open(pdfObjectUrl, '_blank');
-                    } catch (pdfErr) {
-                        toast.error(`Error fetching PDF: ${pdfErr.message}`);
-                        console.error('PDF fetch error:', pdfErr);
-                    }
-                }, 7000); // 7 seconds delay
-
                 setFormData(responseData.order); // Pass order data to parent if needed
             } else {
                 throw new Error('No invoice number found in response');
@@ -138,6 +112,37 @@ export default function InvoiceForm({ setFormData }) {
         } catch (err) {
             toast.error(`Error: ${err.message}`);
             console.error('Invoice submission error:', err);
+        }
+    };
+
+    const handlePrintPDF = async () => {
+        if (!lastInvoiceNumber) {
+            toast.error('No invoice number available. Please submit an invoice first.');
+            return;
+        }
+
+        try {
+            const pdfUrl = `https://prod-core-invoice-service-4z5dz4d2yq-uc.a.run.app/invoices/pdf?invoice_number=${lastInvoiceNumber}&customer_id=1&is_roll=1`;
+            const token = 'wqaevQPKrMVPvxlxuhpiURH0XoD2pUo6FTt2LB8EciI'; // Replace with secure method in production
+
+            const pdfResponse = await fetch(pdfUrl, {
+                method: 'GET',
+                headers: {
+                    'accept': 'application/json',
+                    'Authorization': `Bearer ${token}`,
+                },
+            });
+
+            if (!pdfResponse.ok) {
+                throw new Error('Failed to fetch PDF');
+            }
+
+            const pdfBlob = await pdfResponse.blob();
+            const pdfObjectUrl = URL.createObjectURL(pdfBlob);
+            window.open(pdfObjectUrl, '_blank');
+        } catch (err) {
+            toast.error(`Error fetching PDF: ${err.message}`);
+            console.error('PDF fetch error:', err);
         }
     };
 
@@ -210,7 +215,12 @@ export default function InvoiceForm({ setFormData }) {
                 />
             </div>
 
-            <button type="submit">FACTURAR</button>
+            <div className="button-group">
+                <button type="submit">FACTURAR</button>
+                <button type="button" onClick={handlePrintPDF} disabled={!lastInvoiceNumber}>
+                    Print PDF
+                </button>
+            </div>
 
             <style jsx>{`
         .invoice-form {
@@ -245,6 +255,11 @@ export default function InvoiceForm({ setFormData }) {
           border-radius: 4px;
           box-sizing: border-box;
         }
+        .button-group {
+          display: flex;
+          flex-direction: column;
+          gap: 10px;
+        }
         button {
           width: 100%;
           padding: 0.75rem;
@@ -256,7 +271,11 @@ export default function InvoiceForm({ setFormData }) {
           cursor: pointer;
           transition: background-color 0.3s;
         }
-        button:hover {
+        button:disabled {
+          background-color: #ccc;
+          cursor: not-allowed;
+        }
+        button:hover:not(:disabled) {
           background-color: #1976D2;
         }
       `}</style>
