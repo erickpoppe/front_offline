@@ -83,39 +83,41 @@ export default function InvoiceForm({ setFormData }) {
 
             const invoiceNumber = responseData.emission_response?.invoice_number;
             if (invoiceNumber) {
-                toast.success(`Factura enviada con éxito. Generando PDF para Invoice Number: ${invoiceNumber}`, {
+                toast.success(`Factura enviada con éxito. Invoice Number: ${invoiceNumber}. Generando PDF en 7 segundos...`, {
                     position: "top-right",
-                    autoClose: 3000,
+                    autoClose: 7000, // Match the delay for user feedback
                     hideProgressBar: false,
                     closeOnClick: true,
                     pauseOnHover: true,
                     draggable: true,
                 });
 
-                // Construct PDF URL with the invoice number
-                const pdfUrl = `https://prod-core-invoice-service-4z5dz4d2yq-uc.a.run.app/invoices/pdf?invoice_number=${invoiceNumber}&customer_id=1&is_roll=1`;
+                // Wait 7 seconds before fetching the PDF
+                setTimeout(async () => {
+                    try {
+                        const pdfUrl = `https://prod-core-invoice-service-4z5dz4d2yq-uc.a.run.app/invoices/pdf?invoice_number=${invoiceNumber}&customer_id=1&is_roll=1`;
+                        const token = 'wqaevQPKrMVPvxlxuhpiURH0XoD2pUo6FTt2LB8EciI'; // Replace with secure method in production
 
-                // Hardcoded token (replace with secure method in production)
-                const token = 'wqaevQPKrMVPvxlxuhpiURH0XoD2pUo6FTt2LB8EciI';
+                        const pdfResponse = await fetch(pdfUrl, {
+                            method: 'GET',
+                            headers: {
+                                'accept': 'application/json',
+                                'Authorization': `Bearer ${token}`,
+                            },
+                        });
 
-                // Fetch the PDF as a blob
-                const pdfResponse = await fetch(pdfUrl, {
-                    method: 'GET',
-                    headers: {
-                        'accept': 'application/json',
-                        'Authorization': `Bearer ${token}`,
-                    },
-                });
+                        if (!pdfResponse.ok) {
+                            throw new Error('Failed to fetch PDF after delay');
+                        }
 
-                if (!pdfResponse.ok) {
-                    throw new Error('Failed to fetch PDF');
-                }
-
-                const pdfBlob = await pdfResponse.blob();
-                const pdfObjectUrl = URL.createObjectURL(pdfBlob);
-
-                // Open the PDF in a new window
-                window.open(pdfObjectUrl, '_blank');
+                        const pdfBlob = await pdfResponse.blob();
+                        const pdfObjectUrl = URL.createObjectURL(pdfBlob);
+                        window.open(pdfObjectUrl, '_blank');
+                    } catch (pdfErr) {
+                        toast.error(`Error fetching PDF: ${pdfErr.message}`);
+                        console.error('PDF fetch error:', pdfErr);
+                    }
+                }, 7000); // 7 seconds delay
 
                 setFormData(responseData.order); // Pass order data to parent if needed
             } else {
