@@ -13,7 +13,7 @@ export default function InvoiceForm({ setFormData }) {
         clientEmail: '',
         documentNumber: '',
     });
-    const [lastInvoiceNumber, setLastInvoiceNumber] = useState(null); // Store the last invoice number
+    const [lastInvoiceNumber, setLastInvoiceNumber] = useState(null);
 
     const handleChange = (e) => {
         const { name, value } = e.target;
@@ -23,8 +23,14 @@ export default function InvoiceForm({ setFormData }) {
     const handleSubmit = async (e) => {
         e.preventDefault();
 
+        const quantity = parseInt(formState.quantity) || 1;
+        const unitPrice = parseFloat(formState.unitPrice) || 100.0;
+        const discount = parseFloat(formState.discount) || 10.0;
+        const subtotal = (unitPrice * quantity - discount).toFixed(2);
+        const totalAmount = parseFloat(subtotal);
+
         const payload = {
-            explicit_products: [
+            products: [
                 {
                     product_code: formState.productCode || 'explicit-1',
                     description: formState.description || 'med 1',
@@ -35,70 +41,82 @@ export default function InvoiceForm({ setFormData }) {
                     measure_unit: 'unidad',
                     sin_measure_unit_code: 57,
                     product_metadata: { serial_number: '', imei: '' },
-                    quantity: parseInt(formState.quantity) || 1,
-                    unit_price: formState.unitPrice || '100.0',
-                    discount: formState.discount || '10.0',
-                    subtotal: ((parseFloat(formState.unitPrice) || 100) * (parseInt(formState.quantity) || 1) - (parseFloat(formState.discount) || 10)).toFixed(2),
+                    unit_price: unitPrice,
+                    quantity: quantity,
+                    discount: discount,
+                    subtotal: subtotal,
                 },
             ],
-            explicit_client: {
+            customer_id: 1,
+            client: {
                 name: formState.clientName || 'perico de los palotes',
                 email: formState.clientEmail || 'eduardo.laruta@gmail.com',
                 sin_document_type: 1,
                 document_number: formState.documentNumber || '123456',
-                complement: null,
                 client_code: 'palotes123',
                 exception_code: 0,
             },
-            customer_id: 1,
             branch_id: 1,
             pos_id: 1,
+            user_id: 1,
             doc_sector_id: 1,
             payment_method_id: 1,
             currency_id: 1,
-            currency_conversion_factor: '1',
+            currency_conversion_factor: 1,
+            total_amount: totalAmount,
+            total_amount_iva: totalAmount,
+            total_amount_currency: totalAmount,
+            additional_discount: 0,
+            gift_card_amount: 0,
             cashier_name: 'scarlet jo',
+            card_number: null,
+            id_comp_int: 2533542,
+            is_roll: 1,
             is_offline: true,
-            additional_discount: '0',
         };
 
         try {
-            const response = await fetch(
-                'https://prod-core-invoice-service-4z5dz4d2yq-uc.a.run.app/invoices/emit/offline?customer_id=1&branch_id=1&pos_id=1&event_id=54&doc_sector=1',
-                {
-                    method: 'POST',
-                    headers: {
-                        'accept': 'application/json',
-                        'Content-Type': 'application/json',
-                    },
-                    body: JSON.stringify(payload),
-                }
-            );
+            const url = 'https://prod-core-invoice-service-4z5dz4d2yq-uc.a.run.app/v1/api/orders/explicit?do_emit=1';
+            console.log('Sending request to:', url);
+            console.log('Payload:', JSON.stringify(payload));
+
+            const response = await fetch(url, {
+                method: 'POST',
+                headers: {
+                    'accept': 'application/json',
+                    'Content-Type': 'application/json',
+                    'Authorization': 'Bearer wqaevQPKrMVPvxlxuhpiURH0XoD2pUo6FTt2LB8EciI',
+                },
+                body: JSON.stringify(payload),
+            });
+
+            const responseText = await response.text();
+            console.log(`Response status: ${response.status}`);
+            console.log(`Response text: ${responseText}`);
 
             if (!response.ok) {
-                throw new Error('Failed to submit invoice');
+                throw new Error(`Failed to submit invoice (Status: ${response.status})`);
             }
 
-            const responseData = await response.json();
-            console.log('Invoice submission response:', responseData);
+            const responseData = JSON.parse(responseText);
+            console.log('Parsed response:', responseData);
 
             const invoiceNumber = responseData.emission_response?.invoice_number;
             if (invoiceNumber) {
-                setLastInvoiceNumber(invoiceNumber); // Store the invoice number
+                setLastInvoiceNumber(invoiceNumber);
                 toast.success(`Factura enviada con éxito. Invoice Number: ${invoiceNumber}`, {
-                    position: "top-right",
+                    position: 'top-right',
                     autoClose: 5000,
                     hideProgressBar: false,
                     closeOnClick: true,
                     pauseOnHover: true,
                     draggable: true,
                 });
-                setFormData(responseData.order); // Pass order data to parent if needed
+                setFormData(responseData.order);
             } else {
                 throw new Error('No invoice number found in response');
             }
 
-            // Reset form
             setFormState({
                 productCode: '',
                 description: '',
@@ -123,7 +141,9 @@ export default function InvoiceForm({ setFormData }) {
 
         try {
             const pdfUrl = `https://prod-core-invoice-service-4z5dz4d2yq-uc.a.run.app/invoices/pdf?invoice_number=${lastInvoiceNumber}&customer_id=1&is_roll=1`;
-            const token = 'wqaevQPKrMVPvxlxuhpiURH0XoD2pUo6FTt2LB8EciI'; // Replace with secure method in production
+            const token = 'wqaevQPKrMVPvxlxuhpiURH0XoD2pUo6FTt2LB8EciI';
+
+            console.log('Fetching PDF from:', pdfUrl);
 
             const pdfResponse = await fetch(pdfUrl, {
                 method: 'GET',
@@ -134,7 +154,7 @@ export default function InvoiceForm({ setFormData }) {
             });
 
             if (!pdfResponse.ok) {
-                throw new Error('Failed to fetch PDF');
+                throw new Error(`Failed to fetch PDF (Status: ${pdfResponse.status})`);
             }
 
             const pdfBlob = await pdfResponse.blob();
