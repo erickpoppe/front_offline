@@ -9,6 +9,7 @@ export default function MedicalServicesForm({ setFormData }) {
     const [additionalDiscount, setAdditionalDiscount] = useState('0');
     const [isLoading, setIsLoading] = useState(false);
     const [error, setError] = useState(null);
+    const [lastInvoiceNumber, setLastInvoiceNumber] = useState(null); // New state for last invoice number
 
     const addProduct = () => {
         setProducts([...products, { quantity: '', description: '', unitPrice: '', discount: '', subtotal: '' }]);
@@ -117,6 +118,7 @@ export default function MedicalServicesForm({ setFormData }) {
 
             const invoiceNumber = responseData.emission_response?.invoice_number;
             if (invoiceNumber) {
+                setLastInvoiceNumber(invoiceNumber); // Store the invoice number
                 if (responseData.order && responseData.order.status === "PENDING") {
                     toast.info(`Factura pendiente. Invoice Number: ${invoiceNumber}`, {
                         position: "top-right",
@@ -150,6 +152,39 @@ export default function MedicalServicesForm({ setFormData }) {
             toast.error(`Error: ${err.message}`);
         } finally {
             setIsLoading(false);
+        }
+    };
+
+    const handlePrintPDF = async () => {
+        if (!lastInvoiceNumber) {
+            toast.error('No invoice number available. Please submit an invoice first.');
+            return;
+        }
+
+        try {
+            const pdfUrl = `https://prod-core-invoice-service-4z5dz4d2yq-uc.a.run.app/invoices/pdf?invoice_number=${lastInvoiceNumber}&customer_id=1&is_roll=0`; // Note: is_roll=0 for Medical Services
+            const token = 'wqaevQPKrMVPvxlxuhpiURH0XoD2pUo6FTt2LB8EciI';
+
+            console.log('Fetching PDF from:', pdfUrl);
+
+            const response = await fetch(pdfUrl, {
+                method: 'GET',
+                headers: {
+                    'accept': 'application/json',
+                    'Authorization': `Bearer ${token}`,
+                },
+            });
+
+            if (!response.ok) {
+                throw new Error(`Failed to fetch PDF (Status: ${response.status})`);
+            }
+
+            const pdfBlob = await response.blob();
+            const pdfObjectUrl = URL.createObjectURL(pdfBlob);
+            window.open(pdfObjectUrl, '_blank');
+        } catch (err) {
+            toast.error(`Error fetching PDF: ${err.message}`);
+            console.error('PDF fetch error:', err);
         }
     };
 
@@ -254,9 +289,19 @@ export default function MedicalServicesForm({ setFormData }) {
             </div>
 
             {error && <p className="error">{error}</p>}
-            <button type="submit" className="submit-btn" disabled={isLoading}>
-                {isLoading ? 'Facturando...' : 'FACTURAR'}
-            </button>
+            <div className="button-group">
+                <button type="submit" className="submit-btn" disabled={isLoading}>
+                    {isLoading ? 'Facturando...' : 'FACTURAR'}
+                </button>
+                <button
+                    type="button"
+                    className="print-btn"
+                    onClick={handlePrintPDF}
+                    disabled={!lastInvoiceNumber || isLoading}
+                >
+                    Imprimir Factura
+                </button>
+            </div>
 
             <style jsx>{`
                 .invoice-form {
@@ -333,20 +378,33 @@ export default function MedicalServicesForm({ setFormData }) {
                     text-align: center;
                     margin: 1rem 0;
                 }
+                .button-group {
+                    display: flex;
+                    gap: 1rem;
+                }
+                .submit-btn, .print-btn {
+                    flex: 1;
+                    padding: 0.75rem;
+                    border: none;
+                    border-radius: 4px;
+                    font-size: 1rem;
+                    color: white;
+                    cursor: pointer;
+                    transition: background-color 0.3s;
+                }
                 .submit-btn {
                     background-color: #4CAF50;
-                    color: white;
-                    border: none;
-                    padding: 0.75rem 1.5rem;
-                    border-radius: 4px;
-                    cursor: pointer;
-                    font-size: 1rem;
-                    width: 100%;
                 }
                 .submit-btn:hover:not(:disabled) {
                     background-color: #388E3C;
                 }
-                .submit-btn:disabled {
+                .print-btn {
+                    background-color: #2196F3;
+                }
+                .print-btn:hover:not(:disabled) {
+                    background-color: #1976D2;
+                }
+                .submit-btn:disabled, .print-btn:disabled {
                     background-color: #ccc;
                     cursor: not-allowed;
                 }
