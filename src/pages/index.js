@@ -10,9 +10,9 @@ import 'react-toastify/dist/ReactToastify.css';
 
 function Home() {
     const [formData, setFormData] = useState(null);
-    const [counter, setCounter] = useState(68); // Counter for display, starts at 47
+    const [counter, setCounter] = useState(68); // Counter for display, starts at 68
     const [eventId, setEventId] = useState(null); // Tracks the current event ID from response
-    const [batchId, setBatchId] = useState(8); // Tracks batch ID, starts at 6
+    const [batchId, setBatchId] = useState(8); // Tracks batch ID, starts at 8
     const [isSwitchActive, setIsSwitchActive] = useState(false); // Tracks activation switch
     const [activeForm, setActiveForm] = useState(null); // Tracks which form to display
     const [resetActivation, setResetActivation] = useState(false); // Signal to reset activation switch
@@ -63,7 +63,7 @@ function Home() {
 
         try {
             const response = await fetch(
-                `https://prod-core-invoice-service-4z5dz4d2yq-uc.a.run.app/invoices/emit/offline?customer_id=1&branch_id=1&pos_id=1&event_id=${eventId}&doc_sector=1`,
+                `https://prod-core-invoice-service-4z5dz4d2yq-uc.a.run.app/invoices/emit/offline?${new URLSearchParams(payload)}`,
                 {
                     method: 'POST',
                     headers: {
@@ -117,7 +117,7 @@ function Home() {
 
         try {
             const response = await fetch(
-                `https://prod-core-invoice-service-4z5dz4d2yq-uc.a.run.app/invoices/emit/offline?customer_id=1&branch_id=1&pos_id=1&event_id=${eventId}&doc_sector=17`,
+                `https://prod-core-invoice-service-4z5dz4d2yq-uc.a.run.app/invoices/emit/offline?${new URLSearchParams(payload)}`,
                 {
                     method: 'POST',
                     headers: {
@@ -298,104 +298,104 @@ function Home() {
             />
 
             <style jsx>{`
-        .container {
-          display: flex;
-          min-height: 100vh;
-          background-color: #f5f5f5;
-        }
-        .sidebar, .right-sidebar {
-          width: 300px;
-          padding: 20px;
-          background-color: #ffffff;
-          box-shadow: 2px 0 5px rgba(0, 0, 0, 0.1);
-        }
-        .right-sidebar {
-          box-shadow: -2px 0 5px rgba(0, 0, 0, 0.1);
-        }
-        h1 {
-          font-size: 1.5rem;
-          color: #333;
-          margin-bottom: 1rem;
-          text-align: left;
-        }
-        .counter {
-          font-size: 1.2rem;
-          color: #2196F3;
-          margin-bottom: 1.5rem;
-          font-weight: 500;
-        }
-        .switches {
-          display: flex;
-          flex-direction: column;
-          gap: 1.5rem;
-        }
-        .switch-group {
-          display: flex;
-          flex-direction: column;
-          gap: 0.5rem;
-        }
-        h2 {
-          font-size: 1.1rem;
-          color: #555;
-          margin: 0;
-          font-weight: 500;
-        }
-        .main-content {
-          flex: 1;
-          display: flex;
-          flex-direction: column;
-          align-items: center;
-          padding: 20px;
-        }
-        .form-toggle-buttons {
-          margin-bottom: 20px;
-          display: flex;
-          gap: 10px;
-        }
-        .toggle-btn {
-          padding: 10px 20px;
-          font-size: 1rem;
-          border: none;
-          border-radius: 4px;
-          background-color: #ddd;
-          cursor: pointer;
-          transition: background-color 0.3s;
-        }
-        .toggle-btn.active {
-          background-color: #2196F3;
-          color: white;
-        }
-        .toggle-btn:hover:not(.active) {
-          background-color: #ccc;
-        }
-        p {
-          font-size: 1rem;
-          color: #666;
-        }
-        .emit-buttons {
-          margin-top: 20px;
-          display: flex;
-          flex-direction: column;
-          gap: 10px;
-        }
-        .emit-btn {
-          padding: 10px;
-          font-size: 1rem;
-          border: none;
-          border-radius: 4px;
-          background-color: #2196F3;
-          color: white;
-          cursor: pointer;
-          transition: background-color 0.3s;
-        }
-        .emit-btn:disabled {
-          background-color: #ccc;
-          cursor: not-allowed;
-        }
-        .emit-btn:hover:not(:disabled) {
-          background-color: #1976D2;
-        }
-      `}</style>
+                .container {
+                    display: flex;
+                    min-height: 100vh;
+                    background-color: #f5f5f5;
+                }
+                .sidebar, .right-sidebar {
+                    width: 300px;
+                    padding: 20px;
+                    background-color: #ffffff;
+                    box-shadow: 2px 0 5px rgba(0, 0, 0, 0.1);
+                }
+                .right-sidebar {
+                    box-shadow: -2px 0 5px rgba(0, 0, 0, 0.1);
+                }
+                h1 {
+                    font-size: 1.5rem;
+                    color: #333;
+                    margin-bottom: 1rem;
+                    text-align: left;
+                }
+                .counter {
+                    font-size: 1.2rem;
+                    color: #2196F3;
+                    margin-bottom: 1.5rem;
+                    font-weight: 500;
+                }
+                .switches {
+                    display: flex;
+                    flex-direction: column;
+                    gap: 1.5rem;
+                }
+                .switch-group {
+                    display: flex;
+                    flex-direction: column;
+                    gap: 0.5rem;
+                }
+                h2 {
+                    font-size: 1.1rem;
+                    color: #555;
+                    margin: 0;
+                    font-weight: 500;
+                }
+                .main-content {
+                    flex: 1;
+                    display: flex;
+                    flex-direction: column;
+                    align-items: center;
+                    padding: 20px;
+                }
+                .form-toggle-buttons {
+                    margin-bottom: 20px;
+                    display: flex;
+                    gap: 10px;
+                }
+                .toggle-btn {
+                    padding: 10px 20px;
+                    font-size: 1rem;
+                    border: none;
+                    border-radius: 4px;
+                    background-color: #ddd;
+                    cursor: pointer;
+                    transition: background-color 0.3s;
+                }
+                .toggle-btn.active {
+                    background-color: #2196F3;
+                    color: white;
+                }
+                .toggle-btn:hover:not(.active) {
+                    background-color: #ccc;
+                }
+                p {
+                    font-size: 1rem;
+                    color: #666;
+                }
+                .emit-buttons {
+                    margin-top: 20px;
+                    display: flex;
+                    flex-direction: column;
+                    gap: 10px;
+                }
+                .emit-btn {
+                    padding: 10px;
+                    font-size: 1rem;
+                    border: none;
+                    border-radius: 4px;
+                    background-color: #2196F3;
+                    color: white;
+                    cursor: pointer;
+                    transition: background-color 0.3s;
+                }
+                .emit-btn:disabled {
+                    background-color: #ccc;
+                    cursor: not-allowed;
+                }
+                .emit-btn:hover:not(:disabled) {
+                    background-color: #1976D2;
+                }
+            `}</style>
         </div>
     );
 }
