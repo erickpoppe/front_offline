@@ -216,7 +216,6 @@ function Home() {
         <div className="container">
             <div className="sidebar">
                 <h1>Evento Offline</h1>
-                <div className="counter">Counter: {counter}</div>
                 <div className="switches">
                     <div className="switch-group">
                         <h2>Activar Evento</h2>
@@ -275,13 +274,6 @@ function Home() {
                         disabled={!eventId}
                     >
                         Emit Offline (Doc Sector 17)
-                    </button>
-                    <button
-                        className="emit-btn"
-                        onClick={handleValidateBatch}
-                        disabled={!eventId}
-                    >
-                        Validate Batch (Batch ID: {batchId})
                     </button>
                 </div>
             </div>

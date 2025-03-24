@@ -6,6 +6,7 @@
   <component name="ChangeListManager">
     <list default="true" id="3a07ce2b-2b87-4fe2-9d60-7534b28ff9eb" name="Changes" comment="Fix batch_id number">
       <change beforePath="$PROJECT_DIR$/.idea/workspace.xml" beforeDir="false" afterPath="$PROJECT_DIR$/.idea/workspace.xml" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/src/pages/index.js" beforeDir="false" afterPath="$PROJECT_DIR$/src/pages/index.js" afterDir="false" />
     </list>
     <option name="SHOW_DIALOG" value="false" />
     <option name="HIGHLIGHT_CONFLICTS" value="true" />
@@ -54,7 +55,7 @@
       <option name="presentableId" value="Default" />
       <updated>1742337768938</updated>
       <workItem from="1742337770036" duration="7266000" />
-      <workItem from="1742558792416" duration="6767000" />
+      <workItem from="1742558792416" duration="9093000" />
     </task>
     <servers />
   </component>
