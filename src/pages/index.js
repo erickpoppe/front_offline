@@ -2,19 +2,15 @@
 import { useState, useEffect } from 'react';
 import Switch from '../components/Switch';
 import DeactivationSwitch from '../components/DeactivationSwitch';
-import InvoiceForm from '../components/InvoiceForm';
-import MedicalServicesForm from '../components/MedicalServicesForm';
 import Login from '../components/Login';
 import { ToastContainer, toast } from 'react-toastify';
 import 'react-toastify/dist/ReactToastify.css';
 
 function Home() {
-    const [formData, setFormData] = useState(null);
     const [counter, setCounter] = useState(68); // Counter for display, starts at 68
     const [eventId, setEventId] = useState(null); // Tracks the current event ID from response
     const [batchId, setBatchId] = useState(8); // Tracks batch ID, starts at 8
     const [isSwitchActive, setIsSwitchActive] = useState(false); // Tracks activation switch
-    const [activeForm, setActiveForm] = useState(null); // Tracks which form to display
     const [resetActivation, setResetActivation] = useState(false); // Signal to reset activation switch
     const [resetDeactivation, setResetDeactivation] = useState(false); // Signal to reset deactivation switch
 
@@ -26,7 +22,6 @@ function Home() {
         setCounter(prev => prev + 1);
         setEventId(newEventId);
         setIsSwitchActive(true);
-        setActiveForm('ventaFarmacia');
         setResetActivation(false);
         setResetDeactivation(true);
     };
@@ -42,7 +37,6 @@ function Home() {
         });
         setCounter(68);
         setIsSwitchActive(false);
-        setActiveForm(null);
         setResetActivation(true);
         setResetDeactivation(false);
     };
@@ -230,26 +224,9 @@ function Home() {
             </div>
             <div className="main-content">
                 {isSwitchActive ? (
-                    <>
-                        <div className="form-toggle-buttons">
-                            <button
-                                className={`toggle-btn ${activeForm === 'ventaFarmacia' ? 'active' : ''}`}
-                                onClick={() => setActiveForm('ventaFarmacia')}
-                            >
-                                Venta Farmacia
-                            </button>
-                            <button
-                                className={`toggle-btn ${activeForm === 'prestacionesMedicas' ? 'active' : ''}`}
-                                onClick={() => setActiveForm('prestacionesMedicas')}
-                            >
-                                Prestaciones Médicas
-                            </button>
-                        </div>
-                        {activeForm === 'ventaFarmacia' && <InvoiceForm setFormData={setFormData} />}
-                        {activeForm === 'prestacionesMedicas' && <MedicalServicesForm setFormData={setFormData} />}
-                    </>
+                    <p>Evento offline activado. Use los botones de la derecha para emitir facturas.</p>
                 ) : (
-                    <p>Por favor, active el evento offline para mostrar los formularios.</p>
+                    <p>Por favor, active el evento offline para continuar.</p>
                 )}
             </div>
             <div className="right-sidebar">
@@ -338,27 +315,6 @@ function Home() {
                     flex-direction: column;
                     align-items: center;
                     padding: 20px;
-                }
-                .form-toggle-buttons {
-                    margin-bottom: 20px;
-                    display: flex;
-                    gap: 10px;
-                }
-                .toggle-btn {
-                    padding: 10px 20px;
-                    font-size: 1rem;
-                    border: none;
-                    border-radius: 4px;
-                    background-color: #ddd;
-                    cursor: pointer;
-                    transition: background-color 0.3s;
-                }
-                .toggle-btn.active {
-                    background-color: #2196F3;
-                    color: white;
-                }
-                .toggle-btn:hover:not(.active) {
-                    background-color: #ccc;
                 }
                 p {
                     font-size: 1rem;
